@@ -9,7 +9,12 @@
 		<!--https://learn.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/send-local-toast?tabs=uwp-->
 		<SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<ApplicationIcon>Properties\Images\11598313_email_ai mail_letter_correspondence_envelope_icon.ico</ApplicationIcon>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Content Include="Properties\Images\11598313_email_ai mail_letter_correspondence_envelope_icon.ico" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Meziantou.Analyzer" Version="2.0.186">
