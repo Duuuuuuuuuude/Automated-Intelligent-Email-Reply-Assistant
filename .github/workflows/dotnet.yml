@@ -16,6 +16,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Install Visual Studio Build Tools with MSIX support
+      run: |
+        choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.DesktopDevelopment"
+        choco install microsoft-msix-packaging
+
     
     # Install the required .NET SDK with Desktop Bridge (MSIX) support
     - name: Install .NET SDK with Desktop Bridge
