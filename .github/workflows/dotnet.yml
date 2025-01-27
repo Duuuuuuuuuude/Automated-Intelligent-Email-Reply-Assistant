@@ -12,17 +12,27 @@ on:
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: windows-2025
 
     steps:
     - uses: actions/checkout@v4
+    
+    # Install the required .NET SDK with Desktop Bridge (MSIX) support
+    - name: Install .NET SDK with Desktop Bridge
+      run: |
+        # Ensure the Desktop Bridge workload is installed
+        dotnet workload install microsoft-desktop-bridge
+        
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 9.0.x
+        
     - name: Restore dependencies
       run: dotnet restore
+      
     - name: Build
       run: dotnet build --no-restore
+      
     - name: Test
       run: dotnet test --no-build --verbosity normal
