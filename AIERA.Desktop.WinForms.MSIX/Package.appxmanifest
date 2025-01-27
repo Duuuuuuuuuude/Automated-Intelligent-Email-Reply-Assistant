@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  
+  
+  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  xmlns:uap18="http://schemas.microsoft.com/appx/manifest/uap/windows10/18"
+  IgnorableNamespaces="uap rescap com desktop uap18">
+	<!--^^^ Toast Related ^^^-->
+
+	<Identity
+	  Name="057cc4d2-f60c-4119-9727-c67c42391810"
+	  Publisher="CN=Martin Koldste"
+	  Version="1.0.1.0" />
+
+	<Properties>
+		<DisplayName>AIERA</DisplayName>
+		<PublisherDisplayName>Martin Koldste</PublisherDisplayName>
+		<Logo>Images\Email, ai mail, letter icon\Scaled\StoreLogo.png</Logo>
+	</Properties>
+
+	<Dependencies>
+		<TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
+		<TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.14393.0" MaxVersionTested="10.0.14393.0" />
+	</Dependencies>
+
+	<Resources>
+		<Resource Language="x-generate"/>
+	</Resources>
+
+	<Applications>
+		<Application Id="App"
+		  Executable="$targetnametoken$.exe"
+		  EntryPoint="$targetentrypoint$" 
+		  uap18:RuntimeBehavior="windowsApp">
+			
+			<uap:VisualElements
+			  DisplayName="Automated Intelligent Email Reply Assistant"
+			  Description="AIERA"
+			  BackgroundColor="transparent"
+			  Square150x150Logo="Images\Email, ai mail, letter icon\Scaled\Square150x150Logo.png"
+			  Square44x44Logo="Images\Email, ai mail, letter icon\Scaled\Square44x44Logo.png">
+				<uap:DefaultTile Wide310x150Logo="Images\Email, ai mail, letter icon\Scaled\Wide310x150Logo.png"  Square71x71Logo="Images\Email, ai mail, letter icon\Scaled\SmallTile.png" Square310x310Logo="Images\Email, ai mail, letter icon\Scaled\LargeTile.png"/>
+				<uap:SplashScreen Image="Images\Email, ai mail, letter icon\Scaled\SplashScreen.png" />
+			</uap:VisualElements>
+
+
+
+			<Extensions>
+				<!--vvv Toast related vvv-->
+				<!--Specify which CLSID to activate when toast clicked-->
+				<desktop:Extension Category="windows.toastNotificationActivation">
+					<desktop:ToastNotificationActivation ToastActivatorCLSID="BC2C0374-75DC-4A42-B737-A36F40E948A3" />
+				</desktop:Extension>
+
+				<!--vvv Toast related vvv-->
+				<!--Register COM CLSID LocalServer32 registry key-->
+				<com:Extension Category="windows.comServer">
+					<com:ComServer>
+						<com:ExeServer Executable="AIERA.Desktop.WinForms\AIERA.Desktop.WinForms.exe" Arguments="-ToastActivated" DisplayName="Toast activator">
+							<com:Class Id="BC2C0374-75DC-4A42-B737-A36F40E948A3" DisplayName="Toast activator"/>
+						</com:ExeServer>
+					</com:ComServer>
+				</com:Extension>
+
+			</Extensions>
+
+		</Application>
+	</Applications>
+
+	<Capabilities>
+		<Capability Name="internetClient" />
+		<rescap:Capability Name="runFullTrust" />
+	</Capabilities>
+</Package>

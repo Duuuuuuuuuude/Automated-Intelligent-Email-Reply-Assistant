@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="LanguageExt.Core" Version="4.4.9" />
+
+		<PackageReference Include="MailKit" Version="4.10.0" />
+		<PackageReference Include="Meziantou.Analyzer" Version="2.0.186">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Meziantou.Analyzer.Annotations" Version="1.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="9.0.1" />
+		<PackageReference Include="Microsoft.Identity.Client" Version="4.67.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\AIERA.AIChatClient\AIERA.AIChatClient.csproj" />
+	  <ProjectReference Include="..\Common\Common.csproj" />
+	</ItemGroup>
+
+</Project>
