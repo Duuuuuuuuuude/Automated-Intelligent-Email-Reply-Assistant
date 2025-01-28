@@ -10,8 +10,8 @@ public class Error
         Message = message;
     }
 
-    public static Error TaskCancelledExceptionError(string errorMessage)
-        => new("MicrosoftAuthenticationError.AcquireTokenSilentError.TaskCanceledException", errorMessage);
+    //public static Error TaskCancelledExceptionError(string errorMessage)
+    //    => new("Error.TaskCanceledException", errorMessage);
 
     public override int GetHashCode()
     {

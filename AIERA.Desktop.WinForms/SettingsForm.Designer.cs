@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using AIERA.Desktop.WinForms.Authentication.Models.Result_Pattern;
 using AIERA.Desktop.WinForms.Models.ViewModels;
-using Common.Models;
 
 namespace AIERA.Desktop.WinForms;
 
@@ -406,7 +405,7 @@ partial class SettingsForm
     /// <summary>
     /// Creates a button from account data.
     /// </summary>
-    private Button CreateButtonFromAccountData(Result<MicrosoftAccountViewModel, MicrosoftAuthenticationError> authenticationResult)
+    private Button CreateButtonFromAccountData(Result<MicrosoftAccountViewModel> authenticationResult)
     {
         Button btnAccount = new Button();
         btnAccount.ApplyAccountButtonTemplateProperties(btnMicrosoftAccount_Template);
@@ -417,7 +416,7 @@ partial class SettingsForm
     }
 
 
-    private void ApplyAccountDataToButton(Button btnAccount, Result<MicrosoftAccountViewModel, MicrosoftAuthenticationError> authenticationResult)
+    private void ApplyAccountDataToButton(Button btnAccount, Result<MicrosoftAccountViewModel> authenticationResult)
     {
         MicrosoftAccountViewModel microsoftAccountViewModel = authenticationResult.GetMicrosoftAccountViewModel();
 
@@ -475,7 +474,7 @@ partial class SettingsForm
     /// Updates already existing account button or creates a new account button and inserts it in the list/panel of accounts.
     /// </summary>
     /// <param name="authenticationResult"><see cref="Result"/> that contains the account data that will be added to the button.</param>
-    public void UpsertAccountButton(Result<MicrosoftAccountViewModel, MicrosoftAuthenticationError> authenticationResult)
+    public void UpsertAccountButton(Result<MicrosoftAccountViewModel> authenticationResult)
     {
         MicrosoftAccountViewModel microsoftAccountViewModel = authenticationResult.GetMicrosoftAccountViewModel();
 

@@ -4,7 +4,6 @@ using AIERA.Desktop.WinForms.Authentication.Models.Result_Pattern;
 using AIERA.Desktop.WinForms.IoC.Factories;
 using AIERA.Desktop.WinForms.Models.ViewModels;
 using Common.Helpers;
-using Common.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using Polly;
@@ -83,8 +82,8 @@ public partial class SettingsForm : Form
         UpdateLblAccountsLoadStatus(text: accounts.Any() ? "Accounts are loading..." : "No accounts found.");
 
         // Acquire tokens and return button data
-        IEnumerable<Task<Result<MicrosoftAccountViewModel, MicrosoftAuthenticationError>>> accountDataTasks = accounts.Select(async account => await FetchAccountDataAsync(account, _settingsFormClosingCancellationTokenSource.Token));
-        Result<MicrosoftAccountViewModel, MicrosoftAuthenticationError>[] accountData = await Task.WhenAll(accountDataTasks);
+        IEnumerable<Task<Result<MicrosoftAccountViewModel>>> accountDataTasks = accounts.Select(async account => await FetchAccountDataAsync(account, _settingsFormClosingCancellationTokenSource.Token));
+        Result<MicrosoftAccountViewModel>[] accountData = await Task.WhenAll(accountDataTasks);
 
         // Create buttons based on account data
         Button[] buttons = accountData.Select(CreateButtonFromAccountData).ToArray<Button>();
@@ -107,7 +106,7 @@ public partial class SettingsForm : Form
     /// <param name="account"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    private async Task<Result<MicrosoftAccountViewModel, MicrosoftAuthenticationError>> FetchAccountDataAsync(IAccount account, CancellationToken cancellationToken)
+    private async Task<Result<MicrosoftAccountViewModel>> FetchAccountDataAsync(IAccount account, CancellationToken cancellationToken)
     {
         try
         {
@@ -117,13 +116,13 @@ public partial class SettingsForm : Form
                                              .ExecuteAsync(cancellationToken);
             }, cancellationToken);
 
-            return Result.Ok<MicrosoftAccountViewModel, MicrosoftAuthenticationError>(new MicrosoftAccountViewModel(authResult.Account,
+            return Result.Ok<MicrosoftAccountViewModel>(new MicrosoftAccountViewModel(authResult.Account,
                                                                                                                     authResult,
                                                                                                                     Claims: null));
         }
         catch (TaskCanceledException)
         {
-            return HandleTaskCanceledException();
+            return HandleTaskCanceledException(account);
             // LOG
         }
         catch (MsalUiRequiredException ex) /*when (ex.ErrorCode.Equals(MsalError.InvalidGrantError))*/
@@ -159,27 +158,33 @@ public partial class SettingsForm : Form
 
 
     #region Exception handlers
-    private static Result<MicrosoftAccountViewModel, MicrosoftAuthenticationError> HandleTaskCanceledException()
+
+    /// <summary>
+    /// Handles a <see cref="TaskCanceledException"/> that occurred while trying to acquire a token.
+    /// </summary>
+    /// <remarks>All paths has to return a value, otherwise this method would not be necessary.</remarks>
+    /// <returns></returns>
+    private static Result<MicrosoftAccountViewModel> HandleTaskCanceledException(IAccount account)
     {
-        var error = Error.TaskCancelledExceptionError("Authentication Canceled.");
-        return Result.Fail<MicrosoftAccountViewModel, MicrosoftAuthenticationError>(error);
+        var error = MicrosoftAuthenticationError.TaskCancelledExceptionError("Authentication Canceled.", account);
+        return Result.Fail<MicrosoftAccountViewModel>(error);
     }
 
-    private static Result<MicrosoftAccountViewModel, MicrosoftAuthenticationError> HandleMsalUiRequiredException(IAccount account, MsalUiRequiredException ex)
+    private static Result<MicrosoftAccountViewModel> HandleMsalUiRequiredException(IAccount account, MsalUiRequiredException ex)
     {
-        Error error = MicrosoftAuthenticationError.MsalUiRequiredExceptionError(ExceptionErrorMessagesMicrosoft.GetExceptionErrorMessage(ex, account),
+        MicrosoftAuthenticationError error = MicrosoftAuthenticationError.MsalUiRequiredExceptionError(ExceptionErrorMessagesMicrosoft.GetExceptionErrorMessage(ex, account),
                                                                                 new MicrosoftAccountViewModel(account, AuthResult: null, ex.Claims));
-        return Result.Fail<MicrosoftAccountViewModel, MicrosoftAuthenticationError>(error);
+        return Result.Fail<MicrosoftAccountViewModel>(error);
     }
 
-    private static Result<MicrosoftAccountViewModel, MicrosoftAuthenticationError> HandleMsalClientException(IAccount account)
+    private static Result<MicrosoftAccountViewModel> HandleMsalClientException(IAccount account)
     {
         var error = MicrosoftAuthenticationError.MsalClientExceptionError("Client-side issue. Please contact an admin.",
                                                                           new MicrosoftAccountViewModel(account, AuthResult: null, Claims: null));
-        return Result.Fail<MicrosoftAccountViewModel, MicrosoftAuthenticationError>(error);
+        return Result.Fail<MicrosoftAccountViewModel>(error);
     }
 
-    private static Result<MicrosoftAccountViewModel, MicrosoftAuthenticationError> HandleHostNotFoundException(IAccount account)
+    private static Result<MicrosoftAccountViewModel> HandleHostNotFoundException(IAccount account)
     {
         string errorMessage;
 
@@ -190,22 +195,22 @@ public partial class SettingsForm : Form
 
         var error = MicrosoftAuthenticationError.HostNotFoundExceptionError(errorMessage,
                                                                             new MicrosoftAccountViewModel(account, AuthResult: null, Claims: null));
-        return Result.Fail<MicrosoftAccountViewModel, MicrosoftAuthenticationError>(error);
+        return Result.Fail<MicrosoftAccountViewModel>(error);
     }
 
-    private static Result<MicrosoftAccountViewModel, MicrosoftAuthenticationError> HandleMsalServiceException(IAccount account, MsalServiceException ex)
+    private static Result<MicrosoftAccountViewModel> HandleMsalServiceException(IAccount account, MsalServiceException ex)
     {
         var error = MicrosoftAuthenticationError.MsalServiceExceptionError(ExceptionErrorMessagesMicrosoft.GetExceptionErrorMessage(ex, account),
                                                                            new MicrosoftAccountViewModel(account, AuthResult: null, ex.Claims));
-        return Result.Fail<MicrosoftAccountViewModel, MicrosoftAuthenticationError>(error);
+        return Result.Fail<MicrosoftAccountViewModel>(error);
     }
 
-    private static Result<MicrosoftAccountViewModel, MicrosoftAuthenticationError> HandleException(IAccount account)
+    private static Result<MicrosoftAccountViewModel> HandleException(IAccount account)
     {
         var error = MicrosoftAuthenticationError.ExceptionError($"Unexpected error while authenticating '{account.Username}'. Please contact an admin.",
                                                                 new MicrosoftAccountViewModel(account, AuthResult: null, Claims: null));
 
-        return Result.Fail<MicrosoftAccountViewModel, MicrosoftAuthenticationError>(error);
+        return Result.Fail<MicrosoftAccountViewModel>(error);
     }
     #endregion
 
@@ -282,7 +287,7 @@ public partial class SettingsForm : Form
 
     private async Task SignInToAccount(MicrosoftAccountViewModel accountViewModel)
     {
-        Result<MicrosoftAccountViewModel, MicrosoftAuthenticationError> authenticationResult = await _microsoftAuthentication.SignInAsync(Handle, accountViewModel.Account, claims: null, _settingsFormClosingCancellationTokenSource.Token);
+        Result<MicrosoftAccountViewModel> authenticationResult = await _microsoftAuthentication.SignInAsync(Handle, accountViewModel.Account, claims: null, _settingsFormClosingCancellationTokenSource.Token);
         UpsertAccountButton(authenticationResult.GetMicrosoftAccountViewModel());
     }
     #endregion

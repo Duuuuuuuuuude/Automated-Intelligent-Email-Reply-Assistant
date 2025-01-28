@@ -1,5 +1,4 @@
-﻿namespace Common.Models;
-
+﻿namespace AIERA.Desktop.WinForms.Authentication.Models.Result_Pattern;
 
 /// <summary>
 /// A generic way of returning objects from a method. Also prevents exceptions being thrown back as communication
@@ -8,26 +7,26 @@ public class Result
 {
     public bool IsSuccess { get; private set; }
     public bool IsFailure => !IsSuccess;
-    public Error? Error { get; private set; }
+    public MicrosoftAuthenticationError? Error { get; private set; }
 
-    protected Result(bool success, Error? error)
+    protected Result(bool success, MicrosoftAuthenticationError? microsoftAuthenticationError)
     {
         IsSuccess = success;
-        Error = error;
+        Error = microsoftAuthenticationError;
     }
 
-    public static Result Fail(Error error) => new(success: false, error);
+    public static Result Fail(MicrosoftAuthenticationError microsoftAuthenticationError) => new(success: false, microsoftAuthenticationError);
 
-    public static Result<TValue> Fail<TValue>(Error error)
+    public static Result<TValue> Fail<TValue>(MicrosoftAuthenticationError microsoftAuthenticationError)
     {
-        return new Result<TValue>(value: default, success: false, error);
+        return new Result<TValue>(value: default, success: false, microsoftAuthenticationError);
     }
 
-    public static Result Ok() => new(success: true, error: null);
+    public static Result Ok() => new(success: true, microsoftAuthenticationError: null);
 
     public static Result<TValue> Ok<TValue>(TValue value)
     {
-        return new Result<TValue>(value, success: true, error: null);
+        return new Result<TValue>(value, success: true, microsoftAuthenticationError: null);
     }
 
     public static Result Combine(params Result[] results)
@@ -61,11 +60,10 @@ public class Result<TValue> : Result
         private set { _value = value; }
     }
 
-    protected internal Result(TValue? value, bool success, Error? error) : base(success, error)
+    protected internal Result(TValue? value, bool success, MicrosoftAuthenticationError? microsoftAuthenticationError) : base(success, microsoftAuthenticationError)
     {
         if (value == null && success)
             throw new InvalidOperationException("Pass a value if result is successful");
-
         Value = value;
     }
 
@@ -73,7 +71,7 @@ public class Result<TValue> : Result
     public static implicit operator TValue(Result<TValue> from) => from.Value!;
 
     public Result<TValue> Match(Func<TValue, Result<TValue>> success,
-                                        Func<Error, Result<TValue>> failure)
+                                Func<MicrosoftAuthenticationError, Result<TValue>> failure)
     {
         if (IsSuccess)
         {

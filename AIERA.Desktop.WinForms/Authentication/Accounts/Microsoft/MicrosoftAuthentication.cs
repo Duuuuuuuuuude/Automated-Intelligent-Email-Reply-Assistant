@@ -4,7 +4,6 @@ using AIERA.Desktop.WinForms.Models.ViewModels;
 using AIERA.Desktop.WinForms.Toaster;
 using AIERA.Desktop.WinForms.Toaster.Enums;
 using Common.Helpers;
-using Common.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using System.Net.Sockets;
@@ -40,7 +39,7 @@ public partial class MicrosoftAuthentication : IMicrosoftAuthentication
     /// <returns></returns>
     ///     /// <exception cref="HttpRequestException">This exception is sometimes thrown when there is no internet connection.
     ///     It would then have an inner <see cref="SocketException"/> with a <see cref="SocketError.HostNotFound"/> error code indicating the host is unreachable.</exception>
-    public Task<Result<MicrosoftAccountViewModel, MicrosoftAuthenticationError>> SignInAsync(nint? hWnd, IAccount? account, string? claims, CancellationToken cancellationToken = default)
+    public Task<Result<MicrosoftAccountViewModel>> SignInAsync(nint? hWnd, IAccount? account, string? claims, CancellationToken cancellationToken = default)
     {
         return SignInAsync(hWnd, account?.Username, account?.HomeAccountId.Identifier, claims, cancellationToken);
     }
@@ -56,7 +55,7 @@ public partial class MicrosoftAuthentication : IMicrosoftAuthentication
     /// <exception cref="HttpRequestException">This exception is sometimes thrown when there is no internet connection.
     ///     It would then have an inner <see cref="SocketException"/> with a <see cref="SocketError.HostNotFound"/> error code indicating the host is unreachable.</exception>
     /// <returns></returns>
-    public async Task<Result<MicrosoftAccountViewModel, MicrosoftAuthenticationError>> SignInAsync(nint? hWnd, string? loginHint, string? identifier, string? claims, CancellationToken cancellationToken = default)
+    public async Task<Result<MicrosoftAccountViewModel>> SignInAsync(nint? hWnd, string? loginHint, string? identifier, string? claims, CancellationToken cancellationToken = default)
     {
         bool retry = false;
         string? errorMessage = null;
@@ -112,7 +111,7 @@ public partial class MicrosoftAuthentication : IMicrosoftAuthentication
                                                                               AuthResult: null,
                                                                               claims));
 
-        return Result.Fail<MicrosoftAccountViewModel, MicrosoftAuthenticationError>(error);
+        return Result.Fail<MicrosoftAccountViewModel>(error);
     }
 
     #region Toasts
