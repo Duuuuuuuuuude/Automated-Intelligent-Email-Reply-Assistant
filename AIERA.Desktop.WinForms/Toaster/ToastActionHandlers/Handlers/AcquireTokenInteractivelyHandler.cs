@@ -3,7 +3,6 @@ using AIERA.Desktop.WinForms.Authentication.Models.Result_Pattern;
 using AIERA.Desktop.WinForms.IoC.Factories;
 using AIERA.Desktop.WinForms.Models.ViewModels;
 using AIERA.Desktop.WinForms.Toaster.Enums;
-using Common.Models;
 using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace AIERA.Desktop.WinForms.Toaster.ToastActionHandlers.Handlers;
@@ -46,7 +45,7 @@ public class AcquireTokenInteractivelyHandler : IToastActionHandler
                     throw task.Exception; // LOG
                 }
 
-                Result<MicrosoftAccountViewModel, MicrosoftAuthenticationError> authResult = task.Result;
+                Result<MicrosoftAccountViewModel> authResult = task.Result;
 
                 MicrosoftAccountViewModel accountViewModel = authResult.GetMicrosoftAccountViewModel();
 

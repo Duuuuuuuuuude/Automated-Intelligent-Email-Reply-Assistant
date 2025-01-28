@@ -1,7 +1,10 @@
 ﻿using AIERA.Desktop.WinForms.Models.ViewModels;
 using Common.Models;
+using Microsoft.Identity.Client;
 
 namespace AIERA.Desktop.WinForms.Authentication.Models.Result_Pattern;
+
+
 public class MicrosoftAuthenticationError : Error
 {
     public MicrosoftAccountViewModel AccountViewModel { get; }
@@ -23,14 +26,17 @@ public class MicrosoftAuthenticationError : Error
         => new("MicrosoftAuthenticationError.HostNotFoundExceptionError", errorMessage, microsoftAccountViewModel);
     internal static MicrosoftAuthenticationError ExceptionError(string errorMessage, MicrosoftAccountViewModel microsoftAccountViewModel)
         => new("MicrosoftAuthenticationError.ExceptionError", errorMessage, microsoftAccountViewModel);
+
+    // General Errors
+    public static MicrosoftAuthenticationError TaskCancelledExceptionError(string errorMessage, IAccount account)
+    => new("Error.TaskCanceledException", errorMessage, new MicrosoftAccountViewModel(account, AuthResult: null, Claims: null));
 }
 
 
 
 public static class ResultExtensions
 {
-    public static MicrosoftAccountViewModel GetMicrosoftAccountViewModel(
-        this Result<MicrosoftAccountViewModel, MicrosoftAuthenticationError> result)
+    public static MicrosoftAccountViewModel GetMicrosoftAccountViewModel(this Result<MicrosoftAccountViewModel> result)
     {
         return result.Match(success: value => value,
                             failure: error => error.AccountViewModel);

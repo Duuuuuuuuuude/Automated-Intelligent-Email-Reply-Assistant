@@ -2,7 +2,6 @@
 using AIERA.Desktop.WinForms.Authentication.Models.Result_Pattern;
 using AIERA.Desktop.WinForms.IoC.Factories;
 using AIERA.Desktop.WinForms.Models.ViewModels;
-using Common.Models;
 using System.ComponentModel;
 
 namespace AIERA.Desktop.WinForms;
@@ -12,7 +11,7 @@ public partial class LoginForm : Form
     private readonly IMicrosoftAuthentication _microsoftAuthentication;
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public Result<MicrosoftAccountViewModel, MicrosoftAuthenticationError>? MicrosoftAuthenticationResult { get; private set; }
+    public Result<MicrosoftAccountViewModel>? MicrosoftAuthenticationResult { get; private set; }
 
     private readonly CancellationTokenSource _loginFormClosingCancellationTokenSource = new();
 
